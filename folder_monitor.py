@@ -7,22 +7,23 @@ from watchdog.events import PatternMatchingEventHandler
 
 url = os.environ.get("DISCORD_WEBHOOK_URL")
 
+def discord_webhook(event, notification):
+    webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter())
+    webhook.send(notification)
+
 def on_created(event):
     print(f"{event.src_path} has been created!")
 
 def on_deleted(event):
     print(f"ALERT!! Someone deleted {event.src_path}!")
-    discord_webhook(event)
+    notification = f"ALERT!! Someone deleted {event.src_path}!"
+    discord_webhook(event, notification)
 
 def on_modified(event):
     print(f"{event.src_path} has been modified")
 
 def on_moved(event):
     print(f"{event.src_path} was moved to {event.dest_path}")
-
-def discord_webhook(event):
-    webhook = Webhook.from_url(url, adapter=RequestsWebhookAdapter())
-    webhook.send(f"ALERT!! Someone deleted {event.src_path}!")
 
 
 if __name__ == "__main__":
